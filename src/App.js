@@ -16,7 +16,7 @@ import Account from "./pages/account";
 import Footer from "./components/user/Footer";
 import CinemaAuth from "./components/user/Login";
 import Order from "./components/user/Order";
-import Payment from "./components/user/Payment";
+import PaymentPageStatic from "./components/user/Payment";
 import MyTickets from "./components/user/Myticket";
 import MoMoPayment from "./components/user/MomoPayment";
 function Layout() {
@@ -38,7 +38,7 @@ function Layout() {
         <Route path="/auth" element={<CinemaAuth />} />
         <Route path="/checkout" element={<Order />} />
         <Route path="/momo-payment" element={<MoMoPayment />} />
-        <Route path="/payment-status" element={<Payment />} />
+        <Route path="/payment-status" element={<PaymentPageStatic />} />
       </Routes>
 
       {!hideHeaderFooter && <Footer />}

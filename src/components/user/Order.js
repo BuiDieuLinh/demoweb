@@ -1,96 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { Row, Col, Table, Button, Form, Image } from "react-bootstrap";
-import { v4 as uuidv4 } from "uuid";
-import Swal from "sweetalert2";
-import "./order.css";
+import "./order.css"
 
-const Order = () => {
-  const { state } = useLocation();
-  const navigate = useNavigate();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedMethod, setSelectedMethod] = useState("momo");
-
-  const handleSelect = (method) => {
-    setSelectedMethod(method);
-  };
-
-  const {
-    screening_id,
-    selectedSeats,
-    totalPrice,
-    title,
-    screening_date,
-    time,
-    screening_format,
-    room_name,
-  } = state || {};
-
-  const user_id = "12345";
-
-  useEffect(() => {
-    if (!screening_id || !selectedSeats || !totalPrice || !user_id) {
-      setError(
-        "Thiếu thông tin để thực hiện thanh toán. Vui lòng quay lại và thử lại."
-      );
-    }
-  }, [screening_id, selectedSeats, totalPrice, user_id]);
-
-  const handlePayment = async () => {
-    if (!user_id) {
-      Swal.fire({
-        icon: "warning",
-        title: "Cần phải đăng nhập!",
-        text: "Bạn chưa đăng nhập. Vui lòng đăng nhập hoặc đăng ký tài khoản để tiếp tục!",
-        confirmButtonText: "OK",
-        confirmButtonColor: "#dc3545",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-    setError(null);
-    const booking_id = uuidv4();
-
-    try {
-      const paymentData = {
-        orderId: booking_id,
-        amount: totalPrice,
-        payment_method: selectedMethod,
-        title,
-        seats: selectedSeats.map((s) => s.seat_name).join(", "),
-        totalPrice,
-        screening_date,
-        time,
-        screening_format,
-        room_name,
-      };
-
-      if (selectedMethod === "momo") {
-        navigate("/momo-payment", { state: paymentData });
-      } else {
-        navigate("/payment-status", { state: { ...paymentData, resultCode: "0" } });
-      }
-    } catch (err) {
-      setError("Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.");
-      console.error("Payment error:", err);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  if (error) {
-    return (
-      <div className="text-light text-center my-4">
-        <p>{error}</p>
-        <Button variant="dark" onClick={() => navigate(-1)}>
-          Quay lại
-        </Button>
-      </div>
-    );
-  }
-
+const OrderStatic = () => {
   return (
     <div className="container-order">
       <div className="info-detail">
@@ -98,32 +9,30 @@ const Order = () => {
           <div>
             <h5 className="fw-bold">Thông tin phim</h5>
             <span className="fs-6">Phim</span>
-            <p className="fw-bold text-uppercase">{title}</p>
+            <p className="fw-bold text-uppercase">Avengers: Endgame</p>
           </div>
           <Row>
             <Col>
               <span>Ngày giờ chiếu:</span>
               <p className="fw-bold">
-                <span className="text-warning">{time}</span> - {screening_date}
+                <span className="text-warning">14:00 - 17:15</span> - 25/06/2025
               </p>
             </Col>
             <Col>
               <span>Ghế đã chọn:</span>
-              <p className="fw-bold">
-                {selectedSeats?.map((seat) => seat.seat_name).join(", ")}
-              </p>
+              <p className="fw-bold">A1, A2</p>
             </Col>
           </Row>
           <Row>
             <Col>
               <span>Định dạng:</span>
               <p className="fw-bold">
-                <span className="rounded border p-1">{screening_format}</span>
+                <span className="rounded border p-1">3D</span>
               </p>
             </Col>
             <Col>
               <span>Phòng chiếu:</span>
-              <p className="fw-bold">{room_name}</p>
+              <p className="fw-bold">Standard Room 1</p>
             </Col>
           </Row>
         </div>
@@ -140,11 +49,9 @@ const Order = () => {
             </thead>
             <tbody>
               <tr>
-                <td>
-                  Ghế <span>{selectedSeats?.map((seat) => seat.seat_name).join(", ")}</span>
-                </td>
-                <td>{selectedSeats?.length}</td>
-                <td>{totalPrice?.toLocaleString("vi-VN")} đ</td>
+                <td>Ghế <span>A1, A2</span></td>
+                <td>2</td>
+                <td>120,000 đ</td>
               </tr>
             </tbody>
           </Table>
@@ -154,18 +61,9 @@ const Order = () => {
       <div className="payment rounded-4 bg-dark p-4">
         <h5 className="fw-bold mb-4">Phương thức thanh toán</h5>
         <div className="payment-method-container">
-          <div
-            className={`row align-items-center border border-2 rounded-pill p-2 mb-3 ${
-              selectedMethod === "momo" ? "border-danger" : "border-secondary"
-            }`}
-          >
+          <div className="row align-items-center border border-2 rounded-pill p-2 mb-3 border-danger">
             <div className="col-2">
-              <Form.Check
-                type="radio"
-                name="paymentMethod"
-                checked={selectedMethod === "momo"}
-                onChange={() => handleSelect("momo")}
-              />
+              <Form.Check type="radio" name="paymentMethod" checked readOnly />
             </div>
             <div className="col-4">
               <Image src="/momo.png" alt="MoMo" className="payment-logo" />
@@ -174,18 +72,9 @@ const Order = () => {
               <span className="payment-name">MOMO</span>
             </div>
           </div>
-          <div
-            className={`row align-items-center border border-2 rounded-pill p-2 ${
-              selectedMethod === "vnpay" ? "border-danger" : "border-secondary"
-            }`}
-          >
+          <div className="row align-items-center border border-2 rounded-pill p-2 border-secondary">
             <div className="col-2">
-              <Form.Check
-                type="radio"
-                name="paymentMethod"
-                checked={selectedMethod === "vnpay"}
-                onChange={() => handleSelect("vnpay")}
-              />
+              <Form.Check type="radio" name="paymentMethod" checked={false} readOnly />
             </div>
             <div className="col-4">
               <Image src="/vnpay.png" alt="VNPay" className="payment-logo" />
@@ -199,37 +88,22 @@ const Order = () => {
         <h5 className="fw-bold mt-4">Chi phí</h5>
         <div className="d-flex justify-content-between fs-6">
           <span>Thanh toán</span>
-          <p>
-            <strong>{totalPrice?.toLocaleString("vi-VN")} đ</strong>
-          </p>
+          <p><strong>120,000 đ</strong></p>
         </div>
         <div className="d-flex justify-content-between fs-6">
           <span>Phí</span>
-          <p>
-            <strong>0 đ</strong>
-          </p>
+          <p><strong>0 đ</strong></p>
         </div>
         <div className="d-flex justify-content-between fs-6">
           <span>Tổng cộng</span>
-          <p>
-            <strong>{totalPrice?.toLocaleString("vi-VN")} đ</strong>
-          </p>
+          <p><strong>120,000 đ</strong></p>
         </div>
         <div className="d-flex justify-content-end">
-          <Button
-            variant="dark"
-            className="rounded-pill mx-2 p-2"
-            onClick={() => navigate(-1)}
-          >
+          <Button variant="dark" className="rounded-pill mx-2 p-2">
             Quay lại
           </Button>
-          <Button
-            variant="danger"
-            className="rounded-pill p-2"
-            onClick={handlePayment}
-            disabled={isProcessing}
-          >
-            {isProcessing ? "Đang xử lý..." : "Xác nhận thanh toán"}
+          <Button variant="danger" className="rounded-pill p-2">
+            Xác nhận thanh toán
           </Button>
         </div>
       </div>
@@ -237,4 +111,4 @@ const Order = () => {
   );
 };
 
-export default Order;
+export default OrderStatic;
