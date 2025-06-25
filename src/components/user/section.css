@@ -1,0 +1,9 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+.title {
+  border-left: 5px solid rgb(190, 0, 0);
+  font-size: 18px;
+  font-weight: 700;
+  padding-left: 15px;
+}
