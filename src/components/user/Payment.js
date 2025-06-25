@@ -16,15 +16,15 @@ const PaymentPage = () => {
   const [searchParams] = useSearchParams();
   const [status, setStatus] = React.useState("loading");
   const [orderId, setOrderId] = React.useState("");
-  const [amount, setAmount] = React.useState(0);
+  const [_amount, setAmount] = React.useState(0);
   const [paymentMethod, setPaymentMethod] = React.useState("");
-  const [title, setTitle] = React.useState("");
-  const [seats, setSeats] = React.useState("");
-  const [screeningDate, setScreeningDate] = React.useState("");
-  const [time, setTime] = React.useState("");
-  const [screeningFormat, setScreeningFormat] = React.useState("");
-  const [roomName, setRoomName] = React.useState("");
-  const [totalPrice, setTotalPrice] = React.useState(0);
+  const [_title, setTitle] = React.useState("");
+  const [_seats, setSeats] = React.useState("");
+  const [_screeningDate, setScreeningDate] = React.useState("");
+  const [_time, setTime] = React.useState("");
+  const [_screeningFormat, setScreeningFormat] = React.useState("");
+  const [_roomName, setRoomName] = React.useState("");
+  const [_totalPrice, setTotalPrice] = React.useState(0);
   const processedRef = useRef(false);
 
   useEffect(() => {

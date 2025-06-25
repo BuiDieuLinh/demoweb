@@ -5,7 +5,6 @@ const Footer = () => {
     <footer className="bg-dark py-4 text-light w-100">
       <div className="container">
         <div className="row">
-          {/* Cột 1: Logo & Menu */}
           <div className="col-md-2">
             <img
               src="/logo-removebg-preview.png"
@@ -17,39 +16,38 @@ const Footer = () => {
             />
             <ul className="list-unstyled">
               <li>
-                <a href="#" onClick={(e) => e.preventDefault()}>
+                <a href="/about">
                   <i className="fa-solid fa-angle-right"></i> Giới thiệu
                 </a>
               </li>
               <li>
-                <a href="#" onClick={(e) => e.preventDefault()}>
+                <a href="/careers">
                   <i className="fa-solid fa-angle-right"></i> Tuyển dụng
                 </a>
               </li>
               <li>
-                <a href="#" onClick={(e) => e.preventDefault()}>
+                <a href="/contact">
                   <i className="fa-solid fa-angle-right"></i> Liên hệ
                 </a>
               </li>
               <li>
-                <a href="#" onClick={(e) => e.preventDefault()}>
+                <a href="/faq">
                   <i className="fa-solid fa-angle-right"></i> F.A.Q
                 </a>
               </li>
               <li>
-                <a href="#" onClick={(e) => e.preventDefault()}>
+                <a href="/terms">
                   <i className="fa-solid fa-angle-right"></i> Điều khoản sử dụng
                 </a>
               </li>
               <li>
-                <a href="#" onClick={(e) => e.preventDefault()}>
+                <a href="/refund-policy">
                   <i className="fa-solid fa-angle-right"></i> Chính sách hoàn vé
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Cột 2: Cụm rạp */}
           <div className="col-md-4">
             <h5 className="fw-bold d-inline-block border-bottom border-3 pb-1 border-danger">
               RẠP STAR
@@ -62,23 +60,22 @@ const Footer = () => {
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              title="Star Cinemas Location Map"
+              title="Bản đồ vị trí Rạp Star"
             ></iframe>
           </div>
 
-          {/* Cột 3: Kết nối MXH */}
           <div className="col-md-3">
             <h5 className="fw-bold d-inline-block border-bottom border-3 pb-1 border-danger text-nowrap">
               KẾT NỐI VỚI CHÚNG TÔI
             </h5>
             <div className="d-flex gap-2">
-              <a href="#" onClick={(e) => e.preventDefault()}>
+              <a href="https://facebook.com/starcinemas">
                 <img src="/facebook.png" alt="Facebook" />
               </a>
-              <a href="#" onClick={(e) => e.preventDefault()}>
+              <a href="https://tiktok.com/@starcinemas">
                 <img src="/tiktok.png" alt="Tiktok" />
               </a>
-              <a href="#" onClick={(e) => e.preventDefault()}>
+              <a href="https://instagram.com/starcinemas">
                 <img src="/instagram.png" alt="Instagram" />
               </a>
             </div>
@@ -90,7 +87,6 @@ const Footer = () => {
             />
           </div>
 
-          {/* Cột 4: Liên hệ */}
           <div className="col-md-3">
             <h5 className="fw-bold d-inline-block border-bottom border-3 pb-1 border-danger">
               LIÊN HỆ
@@ -107,7 +103,7 @@ const Footer = () => {
               Hotline: <strong>1800 646 410</strong>
             </p>
             <p>
-              Email: <a href="mailto:bachtx@betagroup.vn">linh@stargroup.vn</a>
+              Email: <a href="mailto:linh@stargroup.vn">linh@stargroup.vn</a>
             </p>
           </div>
         </div>

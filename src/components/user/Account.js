@@ -29,10 +29,7 @@ const MOCK_TICKETS = [
     time: "19:30",
     screening_format: "2D",
     room_name: "Room 1",
-    seats: [
-      { seat_name: "A1" },
-      { seat_name: "A2" },
-    ],
+    seats: [{ seat_name: "A1" }, { seat_name: "A2" }],
     total_price: 180000,
     movie_image: "https://via.placeholder.com/150x180?text=Movie+Poster",
     qr_code: "https://via.placeholder.com/100x100?text=QR+Code",
@@ -44,9 +41,7 @@ const MOCK_TICKETS = [
     time: "21:00",
     screening_format: "3D",
     room_name: "Room 2",
-    seats: [
-      { seat_name: "B3" },
-    ],
+    seats: [{ seat_name: "B3" }],
     total_price: 100000,
     movie_image: "https://via.placeholder.com/150x180?text=Movie+Poster",
     qr_code: "https://via.placeholder.com/100x100?text=QR+Code",
@@ -105,7 +100,6 @@ export const Account = () => {
 
     // Mock password change logic
     try {
-      // Simulate successful password change
       alert("Đổi mật khẩu thành công!");
       setModalShow(false);
       setOldPassword("");
@@ -117,7 +111,6 @@ export const Account = () => {
     }
   };
 
-  // Nội dung hiển thị theo tab
   const renderContent = () => {
     switch (selectedTab) {
       case "Tài khoản của tôi":
@@ -298,9 +291,9 @@ export const Account = () => {
                       {format(
                         toZonedTime(
                           new Date(ticket.screening_date),
-                          "Asia/Ho_Chi_Minh",
+                          "Asia/Ho_Chi_Minh"
                         ),
-                        "dd-MM-yyyy",
+                        "dd-MM-yyyy"
                       )}
                     </td>
                     <td>{ticket.movie_title}</td>
@@ -339,7 +332,7 @@ export const Account = () => {
                         <p className="text-light">
                           {formatDateTime(
                             selectedTicket.screening_date,
-                            selectedTicket.time,
+                            selectedTicket.time
                           )}{" "}
                           ({selectedTicket.screening_format})
                         </p>
@@ -391,7 +384,6 @@ export const Account = () => {
     <div style={{ margin: "140px auto 30px", width: "70%" }}>
       <h4 className="fw-bold text-center text-light">Thông tin cá nhân</h4>
 
-      {/* Thanh menu button */}
       <div className="menu d-flex justify-content-center align-items-center my-4 gap-3">
         {["Tài khoản của tôi", "Lịch sử giao dịch", "Quyền lợi"].map((tab) => (
           <Button
@@ -405,8 +397,7 @@ export const Account = () => {
         ))}
       </div>
 
-      {/* Nội dung hiển thị */}
-      <div className="container-content p-3 text-light rounded ">
+      <div className="container-content p-3 text-light rounded">
         {renderContent()}
       </div>
     </div>

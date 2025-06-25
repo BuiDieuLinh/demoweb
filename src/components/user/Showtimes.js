@@ -1,34 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { format, toZonedTime } from "date-fns-tz";
 import "./showtimes.css";
 
-// Mock data (aligned with MovieList and MovieDetail)
-const MOCK_MOVIES = [
-  {
-    movie_id: "1",
-    title: "Avengers: Endgame",
-    genre: "Action, Adventure",
-    duration: 181,
-    release_date: "2025-04-26",
-    age_restriction: 0,
-    poster_url: "https://via.placeholder.com/300x450?text=Avengers+Poster",
-    origin: "USA",
-    screening_format: "2D",
-  },
-  {
-    movie_id: "2",
-    title: "Spider-Man: No Way Home",
-    genre: "Action, Sci-Fi",
-    duration: 148,
-    release_date: "2025-07-15",
-    age_restriction: 16,
-    poster_url: "https://via.placeholder.com/300x450?text=Spider-Man+Poster",
-    origin: "USA",
-    screening_format: "2D",
-  },
-];
-
+// Mock data
 const MOCK_SHOWTIMES = [
   {
     showtime_id: "1",
@@ -42,7 +17,7 @@ const MOCK_SHOWTIMES = [
     duration: 181,
     release_date: "2025-04-26",
     age_restriction: 0,
-    poster_url: "https://via.placeholder.com/300x450?text=Avengers+Poster",
+    poster_url: "https://m.media-amazon.com/images/I/91-UCbbhoiL._AC_SL1500_.jpg",
     origin: "USA",
   },
   {
@@ -57,7 +32,7 @@ const MOCK_SHOWTIMES = [
     duration: 181,
     release_date: "2025-04-26",
     age_restriction: 0,
-    poster_url: "https://via.placeholder.com/300x450?text=Avengers+Poster",
+    poster_url: "https://m.media-amazon.com/images/I/91-UCbbhoiL._AC_SL1500_.jpg",
     origin: "USA",
   },
   {
@@ -72,7 +47,7 @@ const MOCK_SHOWTIMES = [
     duration: 181,
     release_date: "2025-04-26",
     age_restriction: 0,
-    poster_url: "https://via.placeholder.com/300x450?text=Avengers+Poster",
+    poster_url: "https://m.media-amazon.com/images/I/91-UCbbhoiL._AC_SL1500_.jpg",
     origin: "USA",
   },
   {
@@ -87,20 +62,18 @@ const MOCK_SHOWTIMES = [
     duration: 148,
     release_date: "2025-07-15",
     age_restriction: 16,
-    poster_url: "https://via.placeholder.com/300x450?text=Spider-Man+Poster",
+    poster_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQ3tbO86hfEtvYnmwL9XXLls-egbUYbp1oeQ&s",
     origin: "USA",
   },
 ];
 
 export const Showtimes = () => {
-  const today = new Date("2025-06-25T16:45:00+07:00"); // Current date and time
-  const todayFormatted = format(
-    toZonedTime(today, "Asia/Ho_Chi_Minh"),
-    "yyyy-MM-dd"
-  );
-  const [selectedDate, setSelectedDate] = useState(todayFormatted);
-  const [showtimes, setShowtime] = useState([]);
+  // Sử dụng useMemo để memoize today
+  const today = useMemo(() => new Date("2025-06-25T16:45:00+07:00"), []);
   const navigate = useNavigate();
+  const todayFormatted = format(toZonedTime(today, "Asia/Ho_Chi_Minh"), "yyyy-MM-dd");
+  const [showtimes, setShowtimes] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(todayFormatted);
 
   // Tạo danh sách 5 ngày từ hôm nay
   const dates = Array.from({ length: 5 }, (_, i) => {
@@ -113,52 +86,53 @@ export const Showtimes = () => {
     };
   });
 
-  useEffect(() => {
-    fetchShowTimes();
-  }, [fetchShowTimes]);
-
-  const fetchShowTimes = () => {
-    // Use mock data instead of API call
+  // Khai báo fetchShowTimes với useCallback
+  const fetchShowTimes = useCallback(() => {
     const filteredShowtimes = MOCK_SHOWTIMES.filter((st) => {
-      const zonedDate = toZonedTime(
-        new Date(st.screening_date),
-        "Asia/Ho_Chi_Minh"
-      );
+      const zonedDate = toZonedTime(new Date(st.screening_date), "Asia/Ho_Chi_Minh");
       const formattedReleaseDate = format(zonedDate, "yyyy-MM-dd");
       const screeningTime = new Date(`${st.screening_date}T${st.start_time}`);
       const currentTime = today;
 
-      // Only include showtimes after the current time for today
       if (formattedReleaseDate === todayFormatted) {
         return screeningTime >= currentTime;
       }
       return true;
     });
-    setShowtime(filteredShowtimes);
-  };
+    setShowtimes(filteredShowtimes);
+  }, [today, todayFormatted]);
 
+  // useEffect gọi fetchShowTimes
+  useEffect(() => {
+    fetchShowTimes();
+  }, [fetchShowTimes]);
+
+  // Lọc lịch chiếu theo ngày được chọn
   const filteredShowtimes = showtimes.filter((st) => {
-    const zonedDate = toZonedTime(
-      new Date(st.screening_date),
-      "Asia/Ho_Chi_Minh"
-    );
+    const zonedDate = toZonedTime(new Date(st.screening_date), "Asia/Ho_Chi_Minh");
     const formattedReleaseDate = format(zonedDate, "yyyy-MM-dd");
     return formattedReleaseDate === selectedDate;
   });
 
-  // Nhóm phim theo `title` để tránh hiển thị nhiều lần
+  // Nhóm phim theo title
   const groupMovieByShowtime = filteredShowtimes.reduce((acc, curr) => {
     const isExists = acc.find((movie) => movie.title === curr.title);
     if (isExists) {
-      isExists.screenings.push(curr.start_time);
+      isExists.screenings.push(curr);
     } else {
       acc.push({
         ...curr,
-        screenings: [curr.start_time],
+        screenings: [curr],
       });
     }
     return acc;
   }, []);
+
+  // Xử lý click vào lịch chiếu
+  const handleTimeClick = (e, showtime) => {
+    e.stopPropagation();
+    navigate(`/booking/${showtime.showtime_id}`);
+  };
 
   return (
     <div className="showtime-container">
@@ -195,14 +169,21 @@ export const Showtimes = () => {
         {groupMovieByShowtime.length > 0 ? (
           groupMovieByShowtime.map((st) => (
             <div
-              key={st.title}
+              key={st.movie_id}
               className="detail-movie"
+              role="button"
+              tabIndex={0}
               onClick={() => navigate(`/movie/${st.movie_id}`)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  navigate(`/movie/${st.movie_id}`);
+                }
+              }}
             >
               <div className="movie-img">
                 <img
                   src={st.poster_url}
-                  alt="Image movie"
+                  alt={`${st.title} poster`}
                   width="100%"
                   height="100%"
                 />
@@ -219,8 +200,7 @@ export const Showtimes = () => {
                   Xuất xứ: <span>{st.origin}</span>
                 </p>
                 <p className="text-white">
-                  Khởi chiếu:{" "}
-                  <span>
+                  Khởi chiếu: <span>
                     {new Date(st.release_date)
                       .toISOString()
                       .split("T")[0]
@@ -230,15 +210,17 @@ export const Showtimes = () => {
                   </span>
                 </p>
                 <p className="text-danger">
-                  T{st.age_restriction} - Phim được phổ biến đến người xem từ đủ{" "}
-                  {st.age_restriction} tuổi trở lên
+                  T{st.age_restriction} - Phim được phổ biến đến người xem từ đủ {st.age_restriction} tuổi trở lên
                 </p>
                 <div>
                   <p className="fw-bold text-light">Lịch chiếu</p>
                   <div className="container-hour">
-                    {st.screenings.map((time, index) => (
-                      <button key={index}>
-                        {time.split(":").slice(0, 2).join(":")}
+                    {st.screenings.map((screening, index) => (
+                      <button
+                        key={index}
+                        onClick={(e) => handleTimeClick(e, screening)}
+                      >
+                        {screening.start_time.split(":").slice(0, 2).join(":")}
                       </button>
                     ))}
                   </div>

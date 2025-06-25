@@ -1,9 +1,9 @@
 import "./App.css";
 import {
-  BrowserRouter,
   Routes,
   Route,
   useLocation,
+  BrowserRouter,
 } from "react-router-dom";
 import HomePage from "./pages/index";
 import Movie from "./pages/movie";
