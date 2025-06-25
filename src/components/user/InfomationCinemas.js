@@ -7,26 +7,26 @@ export const InfomationCinemas = () => {
   return (
     <div className="container-info">
       <div className="detail-cinema">
-        <h2 className="fw-bold mb-0 ">STAR CINEMA</h2>
+        <h2 className="fw-bold mb-0">STAR CINEMA</h2>
         <div className="network">
           <Button variant="primary" className="px-1 py-0">
-            <i class="fas fa-thumbs-up"></i> Like
+            <i className="fas fa-thumbs-up"></i> Like
           </Button>
           <Button variant="primary" className="px-1 py-0">
             Share
           </Button>
           7 people like this. Be the first of your friends.
         </div>
-        <img src="thumbnail.jpeg" />
+        <img src="thumbnail.jpeg" alt="Star Cinema thumbnail" />
 
         <p>
-          Star Cinema có vị trí trung tâm, tọa lạc tại Hưng Yên Rạp tự hào là
+          Star Cinema có vị trí trung tâm, tọa lạc tại Hưng Yên. Rạp tự hào là
           rạp phim tư nhân duy nhất và đầu tiên sở hữu hệ thống phòng chiếu phim
           đạt chuẩn Hollywood tại Huyện Khoái Châu.
         </p>
         <p>
           Rạp được trang bị hệ thống máy chiếu, phòng chiếu hiện đại với 100%
-          nhập khẩu từ nước ngoài, với 4 phòng chiếu tương được 535 ghế ngồi. Hệ
+          nhập khẩu từ nước ngoài, với 4 phòng chiếu tương ứng 535 ghế ngồi. Hệ
           thống âm thanh Dolby 7.1 và hệ thống cách âm chuẩn quốc tế đảm bảo
           chất lượng âm thanh sống động nhất cho từng thước phim bom tấn.
         </p>
@@ -35,7 +35,7 @@ export const InfomationCinemas = () => {
           60.000 VNĐ và giá vé 3D chỉ từ 70.000 VNĐ. Không chỉ có vậy, rạp còn
           có nhiều chương trình khuyến mại, ưu đãi hàng tuần như đồng giá vé
           40.000 vào các ngày Thứ 3 vui vẻ, Thứ 4 Beta's Day, đồng giá vé cho
-          Học sinh sinh viên, người cao tuổi, trẻ em.....
+          Học sinh sinh viên, người cao tuổi, trẻ em...
         </p>
         <h5>Thông tin liên hệ</h5>
         <p>Rạp Star Cinemas Hưng Yên</p>
@@ -56,6 +56,7 @@ export const InfomationCinemas = () => {
           allowFullScreen=""
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
+          title="Star Cinema Hưng Yên Location"
         ></iframe>
       </div>
       <div className="movies-highlight">
@@ -65,4 +66,5 @@ export const InfomationCinemas = () => {
     </div>
   );
 };
+
 export default InfomationCinemas;

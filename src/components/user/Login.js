@@ -1,13 +1,29 @@
-import React, { useState } from "react";
-import { GoogleLogin } from '@react-oauth/google';
-import axios from "axios";
+import React, { useState, useCallback } from "react";
+import { GoogleLogin } from "@react-oauth/google";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
 import Swal from "sweetalert2";
 import "./login.css";
 
-const API_URL = process.env.REACT_APP_API_URL;
+// Mock data cho người dùng
+const MOCK_USERS = [
+  {
+    user_id: "1",
+    username: "testuser",
+    password: "password123", // Lưu ý: Trong thực tế, password nên được hash
+    email: "testuser@example.com",
+    name: "Test User",
+    role: "user",
+  },
+  {
+    user_id: "2",
+    username: "admin",
+    password: "admin123",
+    email: "admin@example.com",
+    name: "Admin User",
+    role: "admin",
+  },
+];
 
 const CinemaAuth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -20,100 +36,111 @@ const CinemaAuth = () => {
   const handleSwitch = () => {
     setIsLogin(!isLogin);
     setErrors({});
+    setUsername("");
+    setPassword("");
+    setEmail("");
   };
 
-  const handleSubmit = async (e) => {
+  // Mock fetchUserInfo
+  const fetchUserInfo = useCallback(
+    (user_id) => {
+      const user = MOCK_USERS.find((u) => u.user_id === user_id);
+      if (user) {
+        localStorage.setItem("user", JSON.stringify(user));
+        localStorage.setItem("user_id", user_id);
+        localStorage.setItem("token", `fake-token-${user_id}`);
+        navigate("/");
+      } else {
+        setErrors({ general: "Không tìm thấy thông tin người dùng!" });
+      }
+    },
+    [navigate]
+  );
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    setErrors({}); 
+    setErrors({});
 
-    try {
-      if (!isLogin) {
-        try {
-          const response = await axios.post(`${API_URL}/users`, {
-            email,
-            username,
-            password,
-          });
-          console.log(response.data);
-          Swal.fire({
-            title: "Signup Successful!",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 2000,
-          });
-          setIsLogin(true);
-        } catch (err) {
-          console.error("Lỗi khi đăng ký tài khoản: ", err);
-          if (err.response && err.response.status === 400) {
-            const { field, message } = err.response.data;
-            setErrors({ [field]: message }); 
-          } else {
-            setErrors({ general: "Đăng ký thất bại! Vui lòng thử lại." });
-          }
-          return;
-        }
+    if (!username || !password) {
+      setErrors({ general: "Vui lòng nhập đầy đủ username và password!" });
+      return;
+    }
+
+    if (!isLogin) {
+      // Mock đăng ký
+      if (!email) {
+        setErrors({ email: "Vui lòng nhập email!" });
+        return;
+      }
+      if (MOCK_USERS.find((u) => u.username === username)) {
+        setErrors({ username: "Username đã tồn tại!" });
+        return;
+      }
+      if (MOCK_USERS.find((u) => u.email === email)) {
+        setErrors({ email: "Email đã được sử dụng!" });
+        return;
       }
 
-      const response = await axios.post(`${API_URL}/users/login`, {
+      const newUser = {
+        user_id: String(MOCK_USERS.length + 1),
         username,
-        password,
+        password, // Lưu ý: Trong thực tế, cần hash password
+        email,
+        name: username,
+        role: "user",
+      };
+      MOCK_USERS.push(newUser); // Thêm vào mock data
+      Swal.fire({
+        title: "Đăng ký thành công!",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 2000,
       });
-      if (response.status === 200) {
-        Swal.fire({
-          icon: "success",
-          title: "Đăng nhập thành công!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-      }
+      setIsLogin(true);
+      return;
+    }
 
-      const { token } = response.data;
-      const decoded = jwtDecode(token);
-      const user_id = decoded.user_id;
-
-      localStorage.setItem("token", token);
-      localStorage.setItem("user_id", user_id);
-
-      fetchUserInfo(user_id, token);
-    } catch (error) {
+    // Mock đăng nhập
+    const user = MOCK_USERS.find(
+      (u) => u.username === username && u.password === password
+    );
+    if (user) {
+      Swal.fire({
+        icon: "success",
+        title: "Đăng nhập thành công!",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      fetchUserInfo(user.user_id);
+    } else {
       setErrors({
-        general: "Đăng nhập thất bại! Vui lòng kiểm tra lại tài khoản.",
+        general: "Đăng nhập thất bại! Username hoặc password không đúng.",
       });
     }
   };
 
-  const fetchUserInfo = async (user_id, token) => {
+  const handleLoginWithGoogle = () => {
+    // Mock Google Login
+    const mockGoogleUser = {
+      user_id: "1001",
+      username: "googleuser",
+      email: "googleuser@example.com",
+      name: "Google User",
+      role: "user",
+    };
     try {
-      const response = await axios.get(`${API_URL}/users/${user_id}`);
-
-      const userData = response.data[0];
-      localStorage.setItem("user", JSON.stringify(userData));
-      navigate("/");
+      Swal.fire({
+        icon: "success",
+        title: "Đăng nhập Google thành công!",
+        showConfirmButton: false,
+        timer: 2000,
+      });
+      fetchUserInfo(mockGoogleUser.user_id);
+      MOCK_USERS.push(mockGoogleUser); // Thêm vào mock data
     } catch (error) {
-      setErrors({ general: "Không thể lấy thông tin người dùng!" });
+      setErrors({ general: "Đăng nhập Google thất bại!" });
     }
   };
-
-  const handleLoginWithGoogle = async (credentialResponse) => {
-  console.log("credentialResponse:", credentialResponse);
-  try {
-    if (!credentialResponse || !credentialResponse.credential) {
-      throw new Error("Không tìm thấy token Google trong phản hồi");
-    }
-    console.log("Google token:", credentialResponse.credential);
-    const response = await axios.post(`${API_URL}/users/google-auth`, {
-      token: credentialResponse.credential
-    });
-    const { user_id, username, email, name, role } = response.data;
-
-    localStorage.setItem("user_id", user_id); 
-      fetchUserInfo(user_id);
-  } catch (error) {
-    console.error("Lỗi đăng nhập Google:", error);
-    const errorMessage = error.response?.data?.message || "Đăng nhập Google thất bại!";
-    setErrors({ general: errorMessage });
-  }
-};
 
   return (
     <div className="cinema-auth-bg">
@@ -124,14 +151,14 @@ const CinemaAuth = () => {
             sm={10}
             md={8}
             lg={6}
-            className="d-inline text-center mb-5"
+            className="d-flex justify-content-center text-center mb-5"
           >
             <img
               src="logo-removebg-preview.png"
               width={100}
-              height={50}
+              height="40"
               style={{ objectFit: "cover" }}
-              alt="logo"
+              alt="Star Cinema Logo"
             />
           </Col>
 
@@ -155,7 +182,7 @@ const CinemaAuth = () => {
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        isInvalid={!!errors.email} 
+                        isInvalid={!!errors.email}
                         className="auth-input"
                       />
                       <Form.Control.Feedback type="invalid">
@@ -171,7 +198,7 @@ const CinemaAuth = () => {
                       className="auth-input"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      isInvalid={!!errors.username} 
+                      isInvalid={!!errors.username}
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.username}
@@ -186,7 +213,11 @@ const CinemaAuth = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       autoComplete="off"
+                      isInvalid={!!errors.password}
                     />
+                    <Form.Control.Feedback type="invalid">
+                      {errors.password}
+                    </Form.Control.Feedback>
                   </Form.Group>
 
                   {errors.general && (
@@ -204,7 +235,7 @@ const CinemaAuth = () => {
                   <div className="d-flex align-items-center my-3">
                     <div className="flex-grow-1 border-top"></div>
                     <span
-                      style={{color: '#fff', margin: '0 10px', width: 'fit-content' }}
+                      style={{ color: "#fff", margin: "0 10px", width: "fit-content" }}
                     >
                       hoặc
                     </span>
@@ -213,7 +244,6 @@ const CinemaAuth = () => {
                   <GoogleLogin
                     onSuccess={handleLoginWithGoogle}
                     onError={() => {
-                      console.error("Google OAuth error");
                       setErrors({ general: "Lỗi xác thực Google! Vui lòng thử lại." });
                     }}
                     text="signin_with"
