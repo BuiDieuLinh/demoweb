@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Card, Container, Row, Col } from "react-bootstrap";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { Card, Container, Row, Col } from "react-bootstrap";
 import "./movielist.css";
 
 // Mock movie data
@@ -44,14 +44,10 @@ const MOCK_MOVIES = [
 ];
 
 export const MovieList = ({ status, page = 1, limit = 10 }) => {
-  const [movies, setMoive] = useState([]);
+  const [movies, setMovies] = useState([]);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchMovies(page, limit);
-  }, [page, limit]);
-
-  const fetchMovies = (page, limit) => {
+  const fetchMovies = useCallback((page, limit) => {
     try {
       const today = new Date();
       const filterMovies = MOCK_MOVIES.filter((movie) => {
@@ -68,16 +64,20 @@ export const MovieList = ({ status, page = 1, limit = 10 }) => {
       // Apply pagination
       const startIndex = (page - 1) * limit;
       const paginatedMovies = filterMovies.slice(startIndex, startIndex + limit);
-      setMoive(paginatedMovies);
+      setMovies(paginatedMovies);
     } catch (error) {
-      console.error("Loi khi lay danh sach phim: ", error);
+      console.error("Lỗi khi lấy danh sách phim: ", error);
     }
-  };
+  }, [status]);
+
+  useEffect(() => {
+    fetchMovies(page, limit);
+  }, [fetchMovies, page, limit]);
 
   return (
     <div>
       <Container fluid className="container">
-        <Row className="justify-content-start g-4 d-flex flex-wrap ">
+        <Row className="justify-content-start g-4 d-flex flex-wrap">
           {movies.map((movie) => (
             <Col
               xs={8}
@@ -98,10 +98,10 @@ export const MovieList = ({ status, page = 1, limit = 10 }) => {
                       movie.age_restriction === 0
                         ? "c-p.png"
                         : movie.age_restriction === 16
-                          ? "c-16.png"
-                          : "c-18.png"
+                        ? "c-16.png"
+                        : "c-18.png"
                     }
-                    alt={movie.age_restriction}
+                    alt={`Age restriction ${movie.age_restriction}`}
                     className="age_badge"
                   />
                 </div>
@@ -110,7 +110,7 @@ export const MovieList = ({ status, page = 1, limit = 10 }) => {
                     style={{ maxHeight: "270px" }}
                     variant="top"
                     src={movie.poster_url}
-                    alt={movie.title}
+                    alt={`${movie.title} poster`}
                   />
                 </div>
                 <Card.Body className="card-body">

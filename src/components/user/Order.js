@@ -3,15 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Row, Col, Table, Button, Form, Image } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 import Swal from "sweetalert2";
-import { MOCK_TICKETS } from "./mockData";
 import "./order.css";
-
-// Mock data for payment response
-const MOCK_PAYMENT_RESPONSE = {
-  payUrl: "http://localhost:3005/payment",
-  success: true,
-  message: "Payment processed successfully",
-};
 
 const Order = () => {
   const { state } = useLocation();
@@ -62,24 +54,15 @@ const Order = () => {
     const booking_id = uuidv4();
 
     try {
-      const bookingData = {
-        booking_id,
-        user_id,
-        screening_id,
-        movie_title: title,
-        screening_date: screening_date.split("/").reverse().join("-"),
-        time: time.split(" - ")[0] + ":00",
-        screening_format,
-        room_name,
-        seats: selectedSeats,
-        total_price: totalPrice,
-        status: "pending",
-        qr_code: `https://via.placeholder.com/150x150?text=QR+Code+${booking_id.slice(0, 8)}`,
-        movie_image: "https://m.media-amazon.com/images/I/91-UCbbhoiL._AC_SL1500_.jpg",
-      };
-
-      // Chuyển hướng đến PaymentPage với tham số
-      const paymentUrl = `/payment?orderId=${booking_id}&amount=${totalPrice}&payment_method=${selectedMethod}&title=${encodeURIComponent(title)}&seats=${encodeURIComponent(selectedSeats.map(s => s.seat_name).join(", "))}&totalPrice=${totalPrice}&screening_date=${encodeURIComponent(screening_date)}&time=${encodeURIComponent(time)}&screening_format=${encodeURIComponent(screening_format)}&room_name=${encodeURIComponent(room_name)}`;
+      const paymentUrl = `/payment?orderId=${booking_id}&amount=${totalPrice}&payment_method=${selectedMethod}&title=${encodeURIComponent(
+        title
+      )}&seats=${encodeURIComponent(
+        selectedSeats.map((s) => s.seat_name).join(", ")
+      )}&totalPrice=${totalPrice}&screening_date=${encodeURIComponent(
+        screening_date
+      )}&time=${encodeURIComponent(time)}&screening_format=${encodeURIComponent(
+        screening_format
+      )}&room_name=${encodeURIComponent(room_name)}`;
       window.location.href = paymentUrl;
     } catch (err) {
       setError("Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.");
@@ -150,10 +133,7 @@ const Order = () => {
             <tbody>
               <tr>
                 <td>
-                  Ghế{" "}
-                  <span>
-                    {selectedSeats?.map((seat) => seat.seat_name).join(", ")}
-                  </span>
+                  Ghế <span>{selectedSeats?.map((seat) => seat.seat_name).join(", ")}</span>
                 </td>
                 <td>{selectedSeats?.length}</td>
                 <td>{totalPrice?.toLocaleString("vi-VN")} đ</td>
@@ -180,11 +160,7 @@ const Order = () => {
               />
             </div>
             <div className="col-4">
-              <Image
-                src="/momo.png"
-                alt="MoMo"
-                className="payment-logo"
-              />
+              <Image src="/momo.png" alt="MoMo" className="payment-logo" />
             </div>
             <div className="col-6">
               <span className="payment-name">MOMO</span>
@@ -204,11 +180,7 @@ const Order = () => {
               />
             </div>
             <div className="col-4">
-              <Image
-                src="/vnpay.png"
-                alt="VNPay"
-                className="payment-logo"
-              />
+              <Image src="/vnpay.png" alt="VNPay" className="payment-logo" />
             </div>
             <div className="col-6">
               <span className="payment-name">VNPAY</span>

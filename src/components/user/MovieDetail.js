@@ -1,12 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import Card from "react-bootstrap/Card";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import Swal from "sweetalert2";
-import "./moviedetail.css";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Card, Modal, Button } from "react-bootstrap";
+import Swal from "sweetalert2";
 import { format, toZonedTime } from "date-fns-tz";
 import vi from "date-fns/locale/vi";
+import "./moviedetail.css";
 
 // Mock data
 const MOCK_MOVIES = [
@@ -67,12 +65,6 @@ const MOCK_SHOWTIMES = [
   },
 ];
 
-const MOCK_ROOMS = [
-  { room_id: "1", room_name: "VIP Room 1", room_type: "vip" },
-  { room_id: "2", room_name: "Standard Room 1", room_type: "standard" },
-  { room_id: "3", room_name: "Normal Room 1", room_type: "normal" },
-];
-
 const MOCK_SCREENINGS = [
   {
     screening_id: "1",
@@ -128,7 +120,7 @@ const MOCK_SCREENINGS = [
   },
 ];
 
-// Hàm generateSeats từ yêu cầu của bạn, thêm seat_id và seat_status
+// Hàm generateSeats
 const generateSeats = (type, room_id) => {
   let totalSeats = type === 1 ? 100 : type === 2 ? 90 : 80;
   let rows = totalSeats / 10;
@@ -171,9 +163,9 @@ const generateSeats = (type, room_id) => {
 };
 
 const MOCK_SEATS = [
-  ...generateSeats(3, "1"), // VIP: 80 seats
-  ...generateSeats(2, "2"), // Standard: 90 seats
-  ...generateSeats(1, "3"), // Normal: 100 seats
+  ...generateSeats(3, "1"),
+  ...generateSeats(2, "2"),
+  ...generateSeats(1, "3"),
 ];
 
 const MOCK_PRICES = {
@@ -199,14 +191,9 @@ export const MovieDetail = () => {
   const [selectedScreening, setSelectedScreening] = useState(null);
   const [prices, setPrices] = useState(MOCK_PRICES);
   const [totalPrice, setTotalPrice] = useState(0);
-  const [countdown, setCountdown] = useState(600);
   const [countdownDisplay, setCountdownDisplay] = useState("10:00");
 
-  useEffect(() => {
-    fetchMovie();
-  }, [id]);
-
-  const fetchMovie = () => {
+  const fetchMovie = useCallback(() => {
     const movieData = MOCK_MOVIES.find((m) => m.movie_id === id);
     setMovie(movieData);
 
@@ -215,7 +202,11 @@ export const MovieDetail = () => {
 
     const movieScreenings = MOCK_SCREENINGS.filter((sc) => sc.movie_id === id);
     setAllScreenings(movieScreenings);
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchMovie();
+  }, [fetchMovie]);
 
   const fetchSeatsByRoom = (room_id, screening_id) => {
     const seats = MOCK_SEATS.filter((seat) => seat.room_id === room_id);
@@ -262,26 +253,25 @@ export const MovieDetail = () => {
       clearInterval(countdownRef.current);
     }
 
-    setCountdown(600);
+    let countdownValue = 600;
     setCountdownDisplay("10:00");
 
     countdownRef.current = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 0) {
-          clearInterval(countdownRef.current);
-          setSelectedScreening(null);
-          setSelectedSeats([]);
-          setTotalPrice(0);
-          return 0;
-        }
+      countdownValue -= 1;
+      if (countdownValue <= 0) {
+        clearInterval(countdownRef.current);
+        setSelectedScreening(null);
+        setSelectedSeats([]);
+        setTotalPrice(0);
+        setCountdownDisplay("00:00");
+        return;
+      }
 
-        const minutes = Math.floor(prev / 60);
-        const seconds = prev % 60;
-        setCountdownDisplay(
-          `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`
-        );
-        return prev - 1;
-      });
+      const minutes = Math.floor(countdownValue / 60);
+      const seconds = countdownValue % 60;
+      setCountdownDisplay(
+        `${minutes}:${seconds < 10 ? "0" + seconds : seconds}`
+      );
     }, 1000);
   };
 
@@ -454,7 +444,6 @@ export const MovieDetail = () => {
 
   if (!movie) return <p style={{ marginTop: "70px" }}>Đang tải...</p>;
 
-  // Group screenings by room type
   const screeningsByRoomType = screenings.reduce((acc, screening) => {
     const roomType = screening.room_type;
     if (!acc[roomType]) {
@@ -466,18 +455,17 @@ export const MovieDetail = () => {
 
   return (
     <div className="container-details">
-      {/** Chi tiết phim */}
       <Card className="bg-dark text-light rounded-0 position-relative min-h-auto">
         <Card.Img
           src={movie.poster_url}
           className="rounded-0 object-fit-cover"
-          alt="Poster"
+          alt={`${movie.title} poster`}
           style={{ opacity: "0.2", height: "400px" }}
         />
         <Card.ImgOverlay className="d-flex flex-column w-75 m-auto p-3">
           <div className="row align-items-start container-overlay">
             <div className="text-center card-logo">
-              <img src={movie.poster_url} alt="Card" className="rounded-4" />
+              <img src={movie.poster_url} alt={`${movie.title} poster`} className="rounded-4" />
             </div>
             <div className="info-detail">
               <div className="title-rep">
@@ -523,15 +511,16 @@ export const MovieDetail = () => {
                     ? "Kiểm duyệt."
                     : `Kiểm duyệt: T${movie.age_restriction} - Phim được phổ biến đến người xem từ đủ ${movie.age_restriction} tuổi trở lên (${movie.age_restriction}+)`}
                 </Card.Text>
-                <a
-                  className="text-decoration-underline text-light"
+                <button
+                  type="button"
+                  className="text-decoration-underline text-light bg-transparent border-0"
                   onClick={() => {
                     setShowTrailer(false);
                     setModalShow(true);
                   }}
                 >
-                  chi tiết nội dung
-                </a>
+                  Chi tiết nội dung
+                </button>
 
                 <Button
                   size="sm"
@@ -561,7 +550,7 @@ export const MovieDetail = () => {
                           width="100%"
                           height="315"
                           src={getEmbedUrl(movie.trailer_url)}
-                          title="Trailer"
+                          title="Movie Trailer"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           allowFullScreen
@@ -578,7 +567,6 @@ export const MovieDetail = () => {
         </Card.ImgOverlay>
       </Card>
 
-      {/** ngày chiếu */}
       <div className="container-date text-light bg-dark">
         <div className="date-list">
           {dates.map((item) => (
@@ -601,7 +589,6 @@ export const MovieDetail = () => {
         </div>
       </div>
 
-      {/** Suất chiếu */}
       <div className="container-showtime">
         <p className="text-center text-warning">
           Lưu ý: Khán giả dưới 13 tuổi chỉ chọn suất chiếu kết thúc trước 22h và
@@ -614,7 +601,11 @@ export const MovieDetail = () => {
             return (
               <div key={roomType} className="room-type-section">
                 <h5 className="text-light text-capitalize">
-                  {roomType === "vip" ? "Phòng VIP" : roomType === "standard" ? "Phòng Tiêu Chuẩn" : "Phòng Thường"}
+                  {roomType === "vip"
+                    ? "Phòng VIP"
+                    : roomType === "standard"
+                    ? "Phòng Tiêu Chuẩn"
+                    : "Phòng Thường"}
                 </h5>
                 <div className="showtime-buttons">
                   {roomScreenings.map((screening) => (
@@ -641,7 +632,6 @@ export const MovieDetail = () => {
         </div>
       </div>
 
-      {/** chọn ghế */}
       {selectedScreening && (
         <div className="w-75 m-auto text-light my-4">
           <div className="d-flex justify-content-between">
@@ -659,10 +649,8 @@ export const MovieDetail = () => {
           </div>
 
           <div className="my-2">
-            <img src="/screen.jpg" className="w-100" alt="Screen" />
-            <h5 className="text-center fw-bold">
-              {selectedScreening.room_name}
-            </h5>
+            <img src="/screen.jpg" className="w-100" alt="Cinema Screen" />
+            <h5 className="text-center fw-bold">{selectedScreening.room_name}</h5>
           </div>
 
           {seatData.length > 0 ? (

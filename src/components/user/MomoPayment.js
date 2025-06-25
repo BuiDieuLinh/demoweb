@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Image } from "react-bootstrap";
 import { MOCK_TICKETS } from "./mockData";
@@ -17,7 +17,7 @@ const MoMoPayment = () => {
   const [roomName, setRoomName] = useState("");
   const [totalPrice, setTotalPrice] = useState(0);
 
-  useEffect(() => {
+  const processPayment = useCallback(() => {
     const orderIdParam = searchParams.get("orderId") || "mock-order-123";
     const amountParam = parseInt(searchParams.get("amount") || "100000");
     const titleParam = decodeURIComponent(searchParams.get("title") || "");
@@ -38,41 +38,58 @@ const MoMoPayment = () => {
     setRoomName(roomNameParam);
     setTotalPrice(totalPriceParam);
 
-    // Mô phỏng thanh toán thành công
     console.log("Mock payment record:", {
-      booking_id: orderId,
-      amount,
+      booking_id: orderIdParam,
+      amount: amountParam,
       payment_method: "momo",
       payment_status: "success",
     });
 
-    // Thêm vé vào MOCK_TICKETS
     const bookingData = {
-      booking_id: orderId,
+      booking_id: orderIdParam,
       user_id: "12345",
-      screening_id: "mock-screening-" + orderId.slice(-4),
-      movie_title: title,
-      screening_date: screeningDate.split("/").reverse().join("-"),
-      time: time.split(" - ")[0] + ":00",
-      screening_format: screeningFormat,
-      room_name: roomName,
-      seats: seats.split(", ").map(seat => ({ seat_name: seat, price: totalPrice / seats.split(", ").length })),
-      total_price: totalPrice,
+      screening_id: "mock-screening-" + orderIdParam.slice(-4),
+      movie_title: titleParam,
+      screening_date: screeningDateParam.split("/").reverse().join("-"),
+      time: timeParam.split(" - ")[0] + ":00",
+      screening_format: screeningFormatParam,
+      room_name: roomNameParam,
+      seats: seatsParam.split(", ").map((seat) => ({
+        seat_name: seat,
+        price: totalPriceParam / seatsParam.split(", ").length,
+      })),
+      total_price: totalPriceParam,
       status: "pending",
-      qr_code: `https://via.placeholder.com/150x150?text=QR+Code+${orderId.slice(0, 8)}`,
+      qr_code: `https://via.placeholder.com/150x150?text=QR+Code+${orderIdParam.slice(0, 8)}`,
       movie_image: "https://m.media-amazon.com/images/I/91-UCbbhoiL._AC_SL1500_.jpg",
     };
     MOCK_TICKETS.push(bookingData);
     console.log("New ticket added to MOCK_TICKETS:", bookingData);
 
-    // Chuyển sang trang thanh toán thành công sau 5 giây
     const timer = setTimeout(() => {
-      navigate(`/payment-status?orderId=${orderId}&amount=${amount}&payment_method=momo&title=${encodeURIComponent(title)}&seats=${encodeURIComponent(seats)}&totalPrice=${totalPrice}&screening_date=${encodeURIComponent(screeningDate)}&time=${encodeURIComponent(time)}&screening_format=${encodeURIComponent(screeningFormat)}&room_name=${encodeURIComponent(roomName)}`);
+      navigate(
+        `/payment-status?orderId=${orderIdParam}&amount=${amountParam}&payment_method=momo&title=${encodeURIComponent(
+          titleParam
+        )}&seats=${encodeURIComponent(
+          seatsParam
+        )}&totalPrice=${totalPriceParam}&screening_date=${encodeURIComponent(
+          screeningDateParam
+        )}&time=${encodeURIComponent(
+          timeParam
+        )}&screening_format=${encodeURIComponent(
+          screeningFormatParam
+        )}&room_name=${encodeURIComponent(roomNameParam)}`
+      );
     }, 5000);
 
-    // Dọn dẹp timer khi component unmount
     return () => clearTimeout(timer);
   }, [searchParams, navigate]);
+
+  useEffect(() => {
+    const cleanup = processPayment();
+    return cleanup;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [processPayment]);
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
@@ -83,7 +100,7 @@ const MoMoPayment = () => {
             <Col xs={12} md={4} className="text-center">
               <Image
                 src="/momo.png"
-                alt="MoMo"
+                alt="MoMo Logo"
                 className="payment-logo"
                 style={{ width: "100px" }}
               />
@@ -108,8 +125,27 @@ const MoMoPayment = () => {
               className="qr-code"
               style={{ width: "200px", height: "200px" }}
             />
-            <p className="text-light mt-2">
-              Tổng số tiền: <strong>{totalPrice.toLocaleString("vi-VN")} đ</strong>
+            <h6 className="text-light mt-3">Chi tiết thanh toán</h6>
+            <p className="text-light">
+              Mã đơn hàng: <strong>{orderId}</strong>
+            </p>
+            <p className="text-light">
+              Phim: <strong>{title}</strong>
+            </p>
+            <p className="text-light">
+              Ghế: <strong>{seats}</strong>
+            </p>
+            <p className="text-light">
+              Ngày chiếu: <strong>{screeningDate}</strong>, {time}
+            </p>
+            <p className="text-light">
+              Phòng: <strong>{roomName}</strong> ({screeningFormat})
+            </p>
+            <p className="text-light">
+              Số tiền: <strong>{amount.toLocaleString("vi-VN")} đ</strong>
+            </p>
+            <p className="text-light">
+              Tổng tiền: <strong>{totalPrice.toLocaleString("vi-VN")} đ</strong>
             </p>
           </div>
         </div>
