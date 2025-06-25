@@ -54,16 +54,24 @@ const Order = () => {
     const booking_id = uuidv4();
 
     try {
-      const paymentUrl = `/payment?orderId=${booking_id}&amount=${totalPrice}&payment_method=${selectedMethod}&title=${encodeURIComponent(
-        title
-      )}&seats=${encodeURIComponent(
-        selectedSeats.map((s) => s.seat_name).join(", ")
-      )}&totalPrice=${totalPrice}&screening_date=${encodeURIComponent(
-        screening_date
-      )}&time=${encodeURIComponent(time)}&screening_format=${encodeURIComponent(
-        screening_format
-      )}&room_name=${encodeURIComponent(room_name)}`;
-      window.location.href = paymentUrl;
+      const paymentData = {
+        orderId: booking_id,
+        amount: totalPrice,
+        payment_method: selectedMethod,
+        title,
+        seats: selectedSeats.map((s) => s.seat_name).join(", "),
+        totalPrice,
+        screening_date,
+        time,
+        screening_format,
+        room_name,
+      };
+
+      if (selectedMethod === "momo") {
+        navigate("/momo-payment", { state: paymentData });
+      } else {
+        navigate("/payment-status", { state: { ...paymentData, resultCode: "0" } });
+      }
     } catch (err) {
       setError("Có lỗi xảy ra trong quá trình thanh toán. Vui lòng thử lại.");
       console.error("Payment error:", err);

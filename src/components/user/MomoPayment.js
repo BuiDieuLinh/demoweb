@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Container, Row, Col, Image } from "react-bootstrap";
 import { MOCK_TICKETS } from "./mockData";
 import "./momo-payment.css";
 
 const MoMoPayment = () => {
-  const [searchParams] = useSearchParams();
+  const { state } = useLocation();
   const navigate = useNavigate();
   const [orderId, setOrderId] = useState("");
   const [amount, setAmount] = useState(0);
@@ -18,25 +18,27 @@ const MoMoPayment = () => {
   const [totalPrice, setTotalPrice] = useState(0);
 
   const processPayment = useCallback(() => {
-    const orderIdParam = searchParams.get("orderId") || "mock-order-123";
-    const amountParam = parseInt(searchParams.get("amount") || "100000");
-    const titleParam = decodeURIComponent(searchParams.get("title") || "");
-    const seatsParam = decodeURIComponent(searchParams.get("seats") || "");
-    const screeningDateParam = decodeURIComponent(searchParams.get("screening_date") || "");
-    const timeParam = decodeURIComponent(searchParams.get("time") || "");
-    const screeningFormatParam = decodeURIComponent(searchParams.get("screening_format") || "");
-    const roomNameParam = decodeURIComponent(searchParams.get("room_name") || "");
-    const totalPriceParam = parseInt(searchParams.get("totalPrice") || "0");
+    const {
+      orderId: orderIdParam,
+      amount: amountParam,
+      title: titleParam,
+      seats: seatsParam,
+      screening_date: screeningDateParam,
+      time: timeParam,
+      screening_format: screeningFormatParam,
+      room_name: roomNameParam,
+      totalPrice: totalPriceParam,
+    } = state || {};
 
-    setOrderId(orderIdParam);
-    setAmount(amountParam);
-    setTitle(titleParam);
-    setSeats(seatsParam);
-    setScreeningDate(screeningDateParam);
-    setTime(timeParam);
-    setScreeningFormat(screeningFormatParam);
-    setRoomName(roomNameParam);
-    setTotalPrice(totalPriceParam);
+    setOrderId(orderIdParam || "mock-order-123");
+    setAmount(amountParam || 100000);
+    setTitle(titleParam || "");
+    setSeats(seatsParam || "");
+    setScreeningDate(screeningDateParam || "");
+    setTime(timeParam || "");
+    setScreeningFormat(screeningFormatParam || "");
+    setRoomName(roomNameParam || "");
+    setTotalPrice(totalPriceParam || 0);
 
     console.log("Mock payment record:", {
       booking_id: orderIdParam,
@@ -46,44 +48,46 @@ const MoMoPayment = () => {
     });
 
     const bookingData = {
-      booking_id: orderIdParam,
+      booking_id: orderIdParam || "mock-order-123",
       user_id: "12345",
-      screening_id: "mock-screening-" + orderIdParam.slice(-4),
-      movie_title: titleParam,
-      screening_date: screeningDateParam.split("/").reverse().join("-"),
-      time: timeParam.split(" - ")[0] + ":00",
-      screening_format: screeningFormatParam,
-      room_name: roomNameParam,
-      seats: seatsParam.split(", ").map((seat) => ({
+      screening_id: "mock-screening-" + (orderIdParam || "mock-order-123").slice(-4),
+      movie_title: titleParam || "",
+      screening_date: (screeningDateParam || "").split("/").reverse().join("-"),
+      time: (timeParam || "").split(" - ")[0] + ":00",
+      screening_format: screeningFormatParam || "",
+      room_name: roomNameParam || "",
+      seats: (seatsParam || "").split(", ").map((seat) => ({
         seat_name: seat,
-        price: totalPriceParam / seatsParam.split(", ").length,
+        price: (totalPriceParam || 0) / (seatsParam || "").split(", ").length || 1,
       })),
-      total_price: totalPriceParam,
+      total_price: totalPriceParam || 0,
       status: "pending",
-      qr_code: `https://via.placeholder.com/150x150?text=QR+Code+${orderIdParam.slice(0, 8)}`,
+      qr_code: `https://via.placeholder.com/150x150?text=QR+Code+${(orderIdParam || "mock-order-123").slice(0, 8)}`,
       movie_image: "https://m.media-amazon.com/images/I/91-UCbbhoiL._AC_SL1500_.jpg",
     };
     MOCK_TICKETS.push(bookingData);
     console.log("New ticket added to MOCK_TICKETS:", bookingData);
 
     const timer = setTimeout(() => {
-      navigate(
-        `/payment-status?orderId=${orderIdParam}&amount=${amountParam}&payment_method=momo&title=${encodeURIComponent(
-          titleParam
-        )}&seats=${encodeURIComponent(
-          seatsParam
-        )}&totalPrice=${totalPriceParam}&screening_date=${encodeURIComponent(
-          screeningDateParam
-        )}&time=${encodeURIComponent(
-          timeParam
-        )}&screening_format=${encodeURIComponent(
-          screeningFormatParam
-        )}&room_name=${encodeURIComponent(roomNameParam)}`
-      );
+      navigate("/payment-status", {
+        state: {
+          orderId: orderIdParam,
+          amount: amountParam,
+          payment_method: "momo",
+          title: titleParam,
+          seats: seatsParam,
+          screening_date: screeningDateParam,
+          time: timeParam,
+          screening_format: screeningFormatParam,
+          room_name: roomNameParam,
+          totalPrice: totalPriceParam,
+          resultCode: "0",
+        },
+      });
     }, 5000);
 
     return () => clearTimeout(timer);
-  }, [searchParams, navigate]);
+  }, [state, navigate]);
 
   useEffect(() => {
     const cleanup = processPayment();

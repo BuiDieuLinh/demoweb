@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useCallback, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useCallback } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Container,
   Card,
+  CardText,
   CardBody,
   CardTitle,
-  CardText,
   Spinner,
   Button,
 } from "react-bootstrap";
@@ -13,32 +13,33 @@ import Swal from "sweetalert2";
 import "./payment.css";
 
 const PaymentPage = () => {
-  const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState("loading");
-  const [orderId, setOrderId] = useState("");
-  const [amount, setAmount] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState("");
-  const [title, setTitle] = useState("");
-  const [seats, setSeats] = useState("");
-  const [screeningDate, setScreeningDate] = useState("");
-  const [time, setTime] = useState("");
-  const [screeningFormat, setScreeningFormat] = useState("");
-  const [roomName, setRoomName] = useState("");
-  const [totalPrice, setTotalPrice] = useState(0);
-  const processedRef = useRef(false);
+  const { state } = useLocation();
+  const [status, setStatus] = React.useState("loading");
+  const [orderId, setOrderId] = React.useState("");
+  const [amount, setAmount] = React.useState(0);
+  const [paymentMethod, setPaymentMethod] = React.useState("");
+  const [title, setTitle] = React.useState("");
+  const [seats, setSeats] = React.useState("");
+  const [screeningDate, setScreeningDate] = React.useState("");
+  const [time, setTime] = React.useState("");
+  const [screeningFormat, setScreeningFormat] = React.useState("");
+  const [roomName, setRoomName] = React.useState("");
+  const [totalPrice, setTotalPrice] = React.useState(0);
 
   const checkPayment = useCallback(() => {
-    const resultCode = searchParams.get("resultCode") || "0";
-    const orderIdParam = searchParams.get("orderId") || "mock-order-123";
-    const amountParam = parseInt(searchParams.get("amount") || "0");
-    const paymentMethodParam = searchParams.get("payment_method") || "momo";
-    const titleParam = decodeURIComponent(searchParams.get("title") || "");
-    const seatsParam = decodeURIComponent(searchParams.get("seats") || "");
-    const screeningDateParam = decodeURIComponent(searchParams.get("screening_date") || "");
-    const timeParam = decodeURIComponent(searchParams.get("time") || "");
-    const screeningFormatParam = decodeURIComponent(searchParams.get("screening_format") || "");
-    const roomNameParam = decodeURIComponent(searchParams.get("room_name") || "");
-    const totalPriceParam = parseInt(searchParams.get("totalPrice") || "0");
+    const {
+      orderId: orderIdParam,
+      amount: amountParam,
+      payment_method: paymentMethodParam,
+      title: titleParam,
+      seats: seatsParam,
+      screening_date: screeningDateParam,
+      time: timeParam,
+      screening_format: screeningFormatParam,
+      room_name: roomNameParam,
+      totalPrice: totalPriceParam,
+      resultCode,
+    } = state || {};
 
     console.log("Received params:", {
       orderId: orderIdParam,
@@ -53,40 +54,35 @@ const PaymentPage = () => {
       totalPrice: totalPriceParam,
     });
 
-    setOrderId(orderIdParam);
-    setAmount(amountParam);
-    setPaymentMethod(paymentMethodParam);
-    setTitle(titleParam);
-    setSeats(seatsParam);
-    setScreeningDate(screeningDateParam);
-    setTime(timeParam);
-    setScreeningFormat(screeningFormatParam);
-    setRoomName(roomNameParam);
-    setTotalPrice(totalPriceParam);
+    setOrderId(orderIdParam || "mock-order-123");
+    setAmount(amountParam || 0);
+    setPaymentMethod(paymentMethodParam || "momo");
+    setTitle(titleParam || "");
+    setSeats(seatsParam || "");
+    setScreeningDate(screeningDateParam || "");
+    setTime(timeParam || "");
+    setScreeningFormat(screeningFormatParam || "");
+    setRoomName(roomNameParam || "");
+    setTotalPrice(totalPriceParam || 0);
 
     if (resultCode === "0") {
       setStatus("success");
     } else {
       setStatus("fail");
     }
-  }, [searchParams]);
+  }, [state]);
 
   useEffect(() => {
-    if (processedRef.current) {
-      console.log("Đã xử lý, bỏ qua checkPayment");
-      return;
-    }
-    processedRef.current = true;
     checkPayment();
   }, [checkPayment]);
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
-      <Card className="payment-card shadow-lg">
+      <Card className="payment-details shadow-lg">
         <CardBody className="text-center">
           {status === "loading" && (
             <div className="loading-container">
-              <Spinner animation="border" variant="primary" />
+              <Spinner/>
               <CardText className="mt-3 text-muted">
                 Đang xử lý kết quả thanh toán...
               </CardText>
@@ -132,7 +128,8 @@ const PaymentPage = () => {
                 Thanh toán thất bại
               </CardTitle>
               <CardText className="text-muted">
-                Mã đơn hàng: <strong>{orderId}</strong><br />
+                Mã đơn hàng: <strong>{orderId}</strong>
+                <br />
                 Vui lòng thử lại hoặc kiểm tra phương thức thanh toán.
               </CardText>
               <Button variant="outline-danger" href="/movie" className="mt-3">
@@ -143,7 +140,6 @@ const PaymentPage = () => {
         </CardBody>
       </Card>
     </Container>
-  );
-};
-
+  )
+}
 export default PaymentPage;
