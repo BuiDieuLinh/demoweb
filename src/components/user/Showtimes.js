@@ -115,7 +115,7 @@ export const Showtimes = () => {
 
   useEffect(() => {
     fetchShowTimes();
-  }, []);
+  }, [fetchShowTimes]);
 
   const fetchShowTimes = () => {
     // Use mock data instead of API call

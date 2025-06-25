@@ -8,32 +8,12 @@ import {
   CardText,
   Spinner,
   Button,
-  Row,
-  Col,
 } from "react-bootstrap";
-import { MOCK_TICKETS } from "./mockData";
 import Swal from "sweetalert2";
 import "./payment.css";
 
-// Mock data for payment processing
-const MOCK_PAYMENT_RESPONSE = {
-  success: true,
-  message: "Payment recorded successfully",
-};
-
-const MOCK_BOOKING_UPDATE_RESPONSE = {
-  success: true,
-  message: "Booking updated with QR code",
-};
-
-const MOCK_BOOKING_CANCEL_RESPONSE = {
-  success: true,
-  message: "Booking cancelled",
-};
-
 const PaymentPage = () => {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const [status, setStatus] = React.useState("loading");
   const [orderId, setOrderId] = React.useState("");
   const [amount, setAmount] = React.useState(0);

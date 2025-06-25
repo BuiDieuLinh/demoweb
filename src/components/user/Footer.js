@@ -1,4 +1,3 @@
-import React from "react";
 import "./footer.css";
 
 const Footer = () => {
@@ -18,32 +17,32 @@ const Footer = () => {
             />
             <ul className="list-unstyled">
               <li>
-                <a href="#">
+                <a>
                   <i class="fa-solid fa-angle-right"></i> Giới thiệu
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a>
                   <i class="fa-solid fa-angle-right"></i> Tuyển dụng
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a>
                   <i class="fa-solid fa-angle-right"></i> Liên hệ
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a>
                   <i class="fa-solid fa-angle-right"></i> F.A.Q
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a>
                   <i class="fa-solid fa-angle-right"></i> Điều khoản sử dụng
                 </a>
               </li>
               <li>
-                <a href="#">
+                <a>
                   <i class="fa-solid fa-angle-right"></i> Chính sách hoàn vé
                 </a>
               </li>
@@ -72,13 +71,13 @@ const Footer = () => {
               KẾT NỐI VỚI CHÚNG TÔI
             </h5>
             <div className="d-flex gap-2">
-              <a href="#">
+              <a>
                 <img src="/facebook.png" alt="Facebook" />
               </a>
-              <a href="#">
+              <a>
                 <img src="/tiktok.png" alt="Tiktok" />
               </a>
-              <a href="#">
+              <a>
                 <img src="/instagram.png" alt="Instagram" />
               </a>
             </div>

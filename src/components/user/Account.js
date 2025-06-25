@@ -67,11 +67,8 @@ export const Account = () => {
   // lsgd
   const [tickets, setTickets] = useState(MOCK_TICKETS);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showModal, setShowModal] = useState(false);
-
-  const user_id = localStorage.getItem("user_id");
 
   const formatDateTime = (date, time) => {
     return `${time} - ${new Date(date).toLocaleDateString("vi-VN")}`;
