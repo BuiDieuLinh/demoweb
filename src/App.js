@@ -36,7 +36,7 @@ function Layout() {
         <Route path="/account" element={<Account />} />
         <Route path="/my-ticket" element={<MyTickets />} />
         <Route path="/auth" element={<CinemaAuth />} />
-        <Route path="/checkout" element={<Order />} />
+        <Route path="/order" element={<Order />} />
         <Route path="/momo-payment" element={<MoMoPayment />} />
         <Route path="/payment-status" element={<PaymentPageStatic />} />
       </Routes>
