@@ -17,33 +17,33 @@ const Footer = () => {
             />
             <ul className="list-unstyled">
               <li>
-                <a>
-                  <i class="fa-solid fa-angle-right"></i> Giới thiệu
+                <a href="#" onClick={(e) => e.preventDefault()}>
+                  <i className="fa-solid fa-angle-right"></i> Giới thiệu
                 </a>
               </li>
               <li>
-                <a>
-                  <i class="fa-solid fa-angle-right"></i> Tuyển dụng
+                <a href="#" onClick={(e) => e.preventDefault()}>
+                  <i className="fa-solid fa-angle-right"></i> Tuyển dụng
                 </a>
               </li>
               <li>
-                <a>
-                  <i class="fa-solid fa-angle-right"></i> Liên hệ
+                <a href="#" onClick={(e) => e.preventDefault()}>
+                  <i className="fa-solid fa-angle-right"></i> Liên hệ
                 </a>
               </li>
               <li>
-                <a>
-                  <i class="fa-solid fa-angle-right"></i> F.A.Q
+                <a href="#" onClick={(e) => e.preventDefault()}>
+                  <i className="fa-solid fa-angle-right"></i> F.A.Q
                 </a>
               </li>
               <li>
-                <a>
-                  <i class="fa-solid fa-angle-right"></i> Điều khoản sử dụng
+                <a href="#" onClick={(e) => e.preventDefault()}>
+                  <i className="fa-solid fa-angle-right"></i> Điều khoản sử dụng
                 </a>
               </li>
               <li>
-                <a>
-                  <i class="fa-solid fa-angle-right"></i> Chính sách hoàn vé
+                <a href="#" onClick={(e) => e.preventDefault()}>
+                  <i className="fa-solid fa-angle-right"></i> Chính sách hoàn vé
                 </a>
               </li>
             </ul>
@@ -59,9 +59,10 @@ const Footer = () => {
               style={{ border: "0", margin: "5px 0px" }}
               width="100%"
               height="250"
-              allowfullscreen=""
+              allowFullScreen=""
               loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Star Cinemas Location Map"
             ></iframe>
           </div>
 
@@ -71,13 +72,13 @@ const Footer = () => {
               KẾT NỐI VỚI CHÚNG TÔI
             </h5>
             <div className="d-flex gap-2">
-              <a>
+              <a href="#" onClick={(e) => e.preventDefault()}>
                 <img src="/facebook.png" alt="Facebook" />
               </a>
-              <a>
+              <a href="#" onClick={(e) => e.preventDefault()}>
                 <img src="/tiktok.png" alt="Tiktok" />
               </a>
-              <a>
+              <a href="#" onClick={(e) => e.preventDefault()}>
                 <img src="/instagram.png" alt="Instagram" />
               </a>
             </div>
@@ -90,7 +91,7 @@ const Footer = () => {
           </div>
 
           {/* Cột 4: Liên hệ */}
-          <div className="col-md-3 ">
+          <div className="col-md-3">
             <h5 className="fw-bold d-inline-block border-bottom border-3 pb-1 border-danger">
               LIÊN HỆ
             </h5>

@@ -56,7 +56,7 @@ const MOCK_TICKETS = [
 export const Account = () => {
   const [modalShow, setModalShow] = React.useState(false);
   const [selectedTab, setSelectedTab] = useState("Tài khoản của tôi");
-  const [user, setUser] = useState(MOCK_USER);
+  const [user, _setUser] = useState(MOCK_USER);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -65,8 +65,8 @@ export const Account = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // lsgd
-  const [tickets, setTickets] = useState(MOCK_TICKETS);
-  const [loading, setLoading] = useState(false);
+  const [tickets, _setTickets] = useState(MOCK_TICKETS);
+  const [loading, _setLoading] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -200,9 +200,9 @@ export const Account = () => {
                       onClick={() => setShowOldPassword(!showOldPassword)}
                     >
                       {showOldPassword ? (
-                        <i class="fas fa-eye"></i>
+                        <i className="fas fa-eye"></i>
                       ) : (
-                        <i class="fas fa-eye-slash"></i>
+                        <i className="fas fa-eye-slash"></i>
                       )}
                     </div>
                   </FloatingLabel>
@@ -224,9 +224,9 @@ export const Account = () => {
                       onClick={() => setShowNewPassword(!showNewPassword)}
                     >
                       {showNewPassword ? (
-                        <i class="fas fa-eye"></i>
+                        <i className="fas fa-eye"></i>
                       ) : (
-                        <i class="fas fa-eye-slash"></i>
+                        <i className="fas fa-eye-slash"></i>
                       )}
                     </div>
                   </FloatingLabel>
@@ -256,9 +256,9 @@ export const Account = () => {
                       }
                     >
                       {showConfirmPassword ? (
-                        <i class="fas fa-eye"></i>
+                        <i className="fas fa-eye"></i>
                       ) : (
-                        <i class="fas fa-eye-slash"></i>
+                        <i className="fas fa-eye-slash"></i>
                       )}
                     </div>
                   </FloatingLabel>
